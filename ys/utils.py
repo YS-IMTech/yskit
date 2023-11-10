@@ -29,12 +29,12 @@ def tensor2Image(data, format='CHW'):
     scale = 1 if torch.max(data) > 1 else 255
     ndims = data.ndim
     if format=='CHW':
-        img = img.squeeze(0) if ndims==4 else None ##[1,C,H,W] -> [C,H,W]
+        img = data.squeeze(0) if ndims==4 else None ##[1,C,H,W] -> [C,H,W]
         img = img.permute(1,2,0).detach().cpu().numpy() # [C,H,W] -> [H,W,C]
         img = (img.copy() * scale).astype(np.uint8)
     
     else: ## HWC
-        img = img.squeeze(0) if ndims==4 else None ##[1,H,W,C] -> [H,W,C]
+        img = data.squeeze(0) if ndims==4 else None ##[1,H,W,C] -> [H,W,C]
         img = img.detach().cpu().numpy()
         img = (img.copy() * scale).astype(np.uint8)
 
