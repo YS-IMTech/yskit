@@ -26,7 +26,7 @@ def tensor2Image(data, format='CHW'):
         img: np.uint8([0-255], [H,W,C]) 
     """
     
-    scale = 1 if max(data) > 1 else 255
+    scale = 1 if torch.max(data) > 1 else 255
     ndims = data.ndim
     if format=='CHW':
         img = img.squeeze(0) if ndims==4 else None ##[1,C,H,W] -> [C,H,W]
@@ -63,18 +63,18 @@ def save_img(path, img, format='HWC'):
         img: type[np.darray, tensor]
         format: input img type ('HWC','CHW')
     """
-    scale = 1 if max(img) > 1 else 255
     ndims = img.ndim
     img = img.squeeze(0) if ndims==4 else None
     img = img.detach().cpu()
     
     if isinstance(img, np.ndarray):
+        scale = 1 if np.max(img) > 1 else 255
         img = img.transpose(1,2,0) if format=='CHW' else None
         pil_img = Image.fromarray((img * scale).astype(np.uint8))
         pil_img.save(path)
         
     elif isinstance(img, torch.Tensor):
-
+        scale = 1 if torch.max(img) > 1 else 255
         img = img.permute(1,2,0) if format=='CHW' else None
         img = img.numpy()
         pil_img = Image.fromarray((img * scale).astype(np.uint8))
